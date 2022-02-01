@@ -15,12 +15,21 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          
+      - name: Set Build Variables
+        run: |
+          echo "PKG_VERSION_STRICT=${GITHUB_REF_NAME#?}" >> $GITHUB_ENV
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.5.1
         with:
           node-version: 16.x
           registry-url: https://registry.npmjs.org/
+        
+      - name: Set package.json version
+        uses: HarmvZ/set-package-json-version-action@v0.1.2
+        with:
+          version: ${{ env.PKG_VERSION_STRICT }}
 
       - name: Install NPM Dependencies
         run: npm ci
@@ -37,12 +46,12 @@ jobs:
           token: ${{ github.token }}
           tag: ${{ github.ref_name }}
 
-      - name: Commit CHANGELOG.md
+      - name: Commit CHANGELOG.md + package.json
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
-          file_pattern: CHANGELOG.md
+          file_pattern: CHANGELOG.md package.json
 
       - name: Create Release
         uses: ncipollo/release-action@v1
