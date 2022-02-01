@@ -18,6 +18,13 @@
 
 ---
 
+This tool is a CLI which provides the following automation:
+
+- Fetch the list of available repositories and releases
+- Download the latest build of a Python package
+- Install Twine *(if not already installed)*
+- Sign and publish the package to PyPI (or TestPyPI)
+
 ## Requirements
 
 - Node.js 16.x or later
@@ -27,13 +34,13 @@
 
 ## Usage
 
-Install the `@ietf-tools/pypi-publish` NPM package using:
+Install the `@ietf-tools/pypi-publish` NPM package globally using:
 
 ```sh
 npm install -g @ietf-tools/pypi-publish
 ```
 
-Then run:
+Then run *(from any location)*:
 
 ```sh
 pypi-publish
