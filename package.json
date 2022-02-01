@@ -15,8 +15,7 @@
     "inquirer-search-list": "^1.2.6",
     "octokit": "^1.7.1",
     "open": "^8.4.0",
-    "ora": "^6.0.1",
-    "python-shell": "^3.0.1"
+    "ora": "^6.0.1"
   },
   "bin": {
     "pypi-publish": "./cli.js"
