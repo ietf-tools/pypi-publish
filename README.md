@@ -27,8 +27,8 @@ This tool is a CLI which provides the following automation:
 
 ## Requirements
 
-- Node.js 16.x or later
-- Python 2.7 / 3.x (depending on your module to be published)
+- [Node.js](https://nodejs.org/) **16.x or later**
+- [Python](https://www.python.org/) **3.x**
 
 > This tool assumes that you have the signing key used to sign Python packages already configured on your system. It will be used when publishing the package to PyPI.
 
