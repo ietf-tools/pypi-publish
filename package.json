@@ -1,8 +1,8 @@
 {
-  "name": "pypi-publish",
+  "name": "@ietf-tools/pypi-publish",
   "version": "1.0.0",
   "description": "Tool for publishing a Python package to PyPI from a GitHub Release",
-  "main": "index.js",
+  "main": "cli.js",
   "repository": "https://github.com/ietf-tools/pypi-publish.git",
   "author": "IETF Trust",
   "license": "BSD-3-Clause",
@@ -17,5 +17,8 @@
     "open": "^8.4.0",
     "ora": "^6.0.1",
     "python-shell": "^3.0.1"
+  },
+  "bin": {
+    "pypi-publish": "./cli.js"
   }
 }

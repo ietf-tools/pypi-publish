@@ -1,4 +1,4 @@
-name: Build
+name: Publish to NPM
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -12,17 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.platform }}
-    
-    strategy:
-      matrix:
-        include:
-          - platform: ubuntu-latest
-            target: node16-linux-x64
-          - platform: macos-latest
-            target: node16-macos-x64
-          - platform: windows-latest
-            target: node16-win-x64
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -31,16 +21,9 @@ jobs:
         uses: actions/setup-node@v2.5.1
         with:
           node-version: 16.x
+          registry-url: https://registry.npmjs.org/
 
-      - name: Create Self-Contained Executable
+      - run: npm ci
+      - run: npm publish
         env:
-          TARGET: ${{ matrix.target }}
-        run: |
-          npm install
-          npm install -g pkg
-          pkg -t $TARGET --out-path dist/ index.js
-          
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          path: dist/
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}

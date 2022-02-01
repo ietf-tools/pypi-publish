@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { Octokit } = require('octokit')
 const { createOAuthDeviceAuth } = require('@octokit/auth-oauth-device')
 const inquirer = require('inquirer')
