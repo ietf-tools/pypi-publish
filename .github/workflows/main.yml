@@ -1,0 +1,46 @@
+name: Build
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.platform }}
+    
+    strategy:
+      matrix:
+        include:
+          - platform: ubuntu-latest
+            target: node16-linux-x64
+          - platform: macos-latest
+            target: node16-macos-x64
+          - platform: windows-latest
+            target: node16-win-x64
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version: 16.x
+
+      - name: Create Self-Contained Executable
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          npm install
+          npm install -g pkg
+          pkg -t $TARGET -d index.js
+          
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          path: dist/
