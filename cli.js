@@ -29,7 +29,7 @@ async function main () {
       message: 'Enter path to Python executable:',
       default: process.env.PYTHONHOME || process.env.PYTHON || '',
       validate (v) {
-        return (v && v.length > 0) || 'Enter a valid Python path'
+        return (v && v.length > 1) || 'Enter a valid Python path'
       }
     },
     {
@@ -45,7 +45,7 @@ async function main () {
       name: 'pass',
       message: 'Enter your PyPI password:',
       validate (v) {
-        return (v && v.length > 0) || 'Enter a PyPI password'
+        return (v && v.length > 3) || 'Enter a PyPI password'
       }
     },
     {
@@ -73,6 +73,7 @@ async function main () {
       onVerification(verif) {
         console.info('\nOpen in your browser: %s', verif.verification_uri)
         console.info('Enter code: %s\n', verif.user_code)
+        console.info('(The code has already been copied to your clipboard for convenience.)\n')
         spinnerAuth.start()
         try {
           clipboardy.writeSync(verif.user_code)
