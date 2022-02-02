@@ -54,6 +54,11 @@ async function main () {
       validate (v) {
         return (v && v.length > 3) || 'Enter a PyPI password'
       }
+    },
+    {
+      type: 'input',
+      name: 'gpgidentity',
+      message: 'Enter GPG identity to use for signing (leave empty for default):'
     }
   ])
   if (!optsPrompt?.python) {
@@ -262,7 +267,13 @@ async function main () {
   const spinnerRunTwine = ora('Publishing package using Twine...').start()
   const errorsRun = []
   try {
-    const proc = spawn(optsPrompt.python, ['-m', 'twine', 'upload', '--verbose', '--sign', 'dist/*'], {
+    const twineParams = ['-m', 'twine', 'upload', '--verbose', '--sign']
+    if (optsPrompt.gpgidentity) {
+      twineParams.push('--identity')
+      twineParams.push(optsPrompt.gpgidentity)
+    }
+    twineParams.push('dist/*')
+    const proc = spawn(optsPrompt.python, twineParams, {
       cwd: tempdir,
       windowsHide: true,
       timeout: 1000 * 60 * 5,
