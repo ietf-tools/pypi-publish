@@ -48,6 +48,22 @@ pypi-publish
 
 Enter the necessary info as prompted.
 
+### CLI Arguments *(optional)*
+
+These arguments can also be passed to the CLI to automate values and bypass the questions. All arguments are optional.
+
+| Short         | Long                  | Description                                 |
+|---------------|-----------------------|---------------------------------------------|
+| `-t TARGET`   | `--target=TARGET`     | Target PyPI repository [`pypi`, `testpypi`] |
+| `-u USERNAME` | `--user=USERNAME`     | PyPI username                               |
+| `-p PASSWORD` | `--pass=PASSWORD`     | PyPI password                               |
+| `-i IDENTITY` | `--identity=IDENTITY` | GPG identity to use for package signing     |
+| `-g PROJECT`  | `--project=PROJECT`   | GitHub project (repository) to publish from |
+| `-r RELEASE`  | `--release=RELEASE`   | GitHub release to publish                   |
+|               | `--python-path=PATH`  | Path to Python executable                   |
+| `-h`          | `--help`              | Display usage + help message and exit       |
+| `-v`          | `--version`           | Display CLI version and exit                |
+
 ## License
 
 BSD-3-Clause
