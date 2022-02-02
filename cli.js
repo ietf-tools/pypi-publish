@@ -33,6 +33,13 @@ async function main () {
       }
     },
     {
+      type: 'list',
+      name: 'pypi',
+      message: 'Select the target PyPI repository:',
+      default: 0,
+      choices: ['pypi', 'testpypi']
+    },
+    {
       type: 'input',
       name: 'user',
       message: 'Enter your PyPI username:',
@@ -47,13 +54,6 @@ async function main () {
       validate (v) {
         return (v && v.length > 3) || 'Enter a PyPI password'
       }
-    },
-    {
-      type: 'list',
-      name: 'pypi',
-      message: 'Select the target PyPI repository:',
-      default: 0,
-      choices: ['pypi', 'testpypi']
     }
   ])
   if (!optsPrompt?.python) {
