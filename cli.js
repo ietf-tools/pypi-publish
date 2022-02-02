@@ -14,6 +14,52 @@ const org = 'ietf-tools'
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 
 async function main () {
+  const argv = require('yargs')
+    .scriptName('pypi-publish')
+    .usage('$0 [args]')
+    .options({
+      't': {
+        alias: 'target',
+        describe: 'Target PyPI repository',
+        choices: ['pypi', 'testpypi'],
+        type: 'string'
+      },
+      'u': {
+        alias: 'user',
+        describe: 'PyPI username',
+        type: 'string'
+      },
+      'p': {
+        alias: 'pass',
+        describe: 'PyPI password',
+        type: 'string'
+      },
+      'i': {
+        alias: 'identity',
+        describe: 'GPG identity to use for package signing',
+        type: 'string'
+      },
+      'g': {
+        alias: 'project',
+        describe: 'GitHub project (repository) to publish from',
+        type: 'string'
+      },
+      'r': {
+        alias: 'release',
+        describe: 'GitHub release to publish',
+        type: 'string'
+      },
+      'python-path': {
+        describe: 'Path to Python executable',
+        type: 'string'
+      }
+    })
+    .help()
+    .alias('h', 'help')
+    .alias('v', 'version')
+    .epilogue('All arguments are optional and will be prompted if not provided.')
+    .argv
+
   console.info('===========================')
   console.info('IETF Python Publishing Tool')
   console.info('===========================\n')
@@ -58,9 +104,15 @@ async function main () {
     {
       type: 'input',
       name: 'gpgidentity',
-      message: 'Enter GPG identity to use for signing (leave empty for default):'
+      message: 'Enter the GPG identity to use for signing (leave empty for default):'
     }
-  ])
+  ], {
+    ...argv.pythonPath && { python: argv.pythonPath },
+    ...argv.t && { pypi: argv.t },
+    ...argv.u && { user: argv.u },
+    ...argv.p && { pass: argv.p },
+    ...argv.i && { gpgidentity: argv.i }
+  })
   if (!optsPrompt?.python) {
     console.error('No Python path entered. Exiting...')
     process.exit(1)
@@ -113,17 +165,30 @@ async function main () {
 
   // -> Select GitHub Repo to use
 
-  const repoPrompt = await inquirer.prompt([
-    {
-      type: 'search-list',
-      name: 'repo',
-      message: 'Select the GitHub repository to use:',
-      choices: repos
+  let repo = null
+  if (argv.g) {
+    if (repos.includes(argv.g)) {
+      repo = argv.g
+      ora(`Using GitHub repository: ${repo}`).succeed()
+    } else {
+      console.warn('Invalid GitHub repository provided.')
     }
-  ])
-  if (!repoPrompt?.repo) {
-    console.error('Invalid or no repository selected. Exiting...')
-    process.exit(1)
+  }
+
+  if (!repo) {
+    let repoPrompt = await inquirer.prompt([
+      {
+        type: 'search-list',
+        name: 'repo',
+        message: 'Select the GitHub repository to use:',
+        choices: repos
+      }
+    ])
+    if (!repoPrompt?.repo) {
+      console.error('Invalid or no repository selected. Exiting...')
+      process.exit(1)
+    }
+    repo = repoPrompt.repo
   }
 
   // -> Fetch GitHub releases
@@ -164,7 +229,7 @@ async function main () {
       }
     `, {
       owner: org,
-      repo: repoPrompt.repo
+      repo: repo
     })
     releases = releasesRaw?.repository?.releases?.nodes ?? []
   } catch (err) {
@@ -176,20 +241,33 @@ async function main () {
 
   // -> Select release to use
 
-  const releasePrompt = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'release',
-      message: 'Select the release to publish:',
-      choices: releases.map(r => r.name),
-      default: 0
+  let releaseName = null
+  if (argv.r) {
+    if (releases.map(r => r.name).includes(argv.r)) {
+      releaseName = argv.r
+      ora(`Using GitHub release: ${releaseName}`).succeed()
+    } else {
+      console.warn('Invalid GitHub release provided.')
     }
-  ])
-  if (!releasePrompt?.release) {
-    console.error('Invalid or no release selected. Exiting...')
-    process.exit(1)
   }
-  const release = releases.filter(r => r.name === releasePrompt.release)[0]
+
+  if (!releaseName) {
+    const releasePrompt = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'release',
+        message: 'Select the release to publish:',
+        choices: releases.map(r => r.name),
+        default: 0
+      }
+    ])
+    if (!releasePrompt?.release) {
+      console.error('Invalid or no release selected. Exiting...')
+      process.exit(1)
+    }
+    releaseName = releasePrompt.release
+  }
+  const release = releases.filter(r => r.name === releaseName)[0]
 
   // -> Check for python dist packages
 
@@ -261,6 +339,21 @@ async function main () {
     process.exit(1)
   }
   spinnerInstallTwine.succeed('Installed Twine successfully.')
+
+  // -> Last prompt check before publishing...
+
+  const confirmPrompt = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'go',
+      message: `Proceed with publishing package ${repo}: ${release.name} to ${optsPrompt.pypi}?`,
+      default: false
+    }
+  ])
+  if (!confirmPrompt?.go) {
+    console.error('Publishing aborted by the user. Exiting...')
+    process.exit(1)
+  }
 
   // -> Run Twine
 
