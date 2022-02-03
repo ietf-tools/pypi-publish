@@ -302,10 +302,12 @@ ${chalk.italic.grey('(The code has already been copied to your clipboard for con
   // -> Create temp dir
 
   const spinnerCreateDir = ora('Downloading release assets...').start()
+  let tempdir = null
   let distdir = null
   try {
     tempdir = path.join(os.tmpdir(), 'ietf-pypi-publish')
     distdir = path.join(tempdir, 'dist')
+    await fs.emptyDir(tempdir)
     await fs.ensureDir(distdir)
     spinnerCreateDir.succeed(`Created temp directory: ${distdir}`)
   } catch (err) {
@@ -418,6 +420,14 @@ ${chalk.italic.grey('(The code has already been copied to your clipboard for con
     process.exit(1)
   }
   spinnerRunTwine.succeed('Published package successfully.')
+
+  // -> Clean up temp directory
+
+  try {
+    await fs.emptyDir(tempdir)
+  } catch (err) {
+    console.error(chalk.yellow(`Unable to clean temp folder ${tempdir}`))
+  }
 
   process.exit(0)
 }
