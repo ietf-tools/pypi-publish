@@ -67,6 +67,7 @@ async function main () {
   const ora = (await import('ora')).default
   const clipboardy = (await import('clipboardy')).default
   const got = (await import('got')).default
+  const chalk = (await import('chalk')).default
 
   const optsPrompt = await inquirer.prompt([
     {
@@ -114,7 +115,7 @@ async function main () {
     ...argv.i && { gpgidentity: argv.i }
   })
   if (!optsPrompt?.python) {
-    console.error('No Python path entered. Exiting...')
+    console.error(chalk.redBright('No Python path entered. Exiting...'))
     process.exit(1)
   }
 
@@ -128,9 +129,12 @@ async function main () {
       clientType: 'oauth-app',
       scopes: ['public_repo'],
       onVerification(verif) {
-        console.info('\nOpen in your browser: %s', verif.verification_uri)
-        console.info('Enter code: %s\n', verif.user_code)
-        console.info('(The code has already been copied to your clipboard for convenience.)\n')
+        console.info(`
+Open in your browser: ${chalk.underline.green(verif.verification_uri)}
+Enter code: ${chalk.bold.yellowBright(verif.user_code)}
+
+${chalk.italic.grey('(The code has already been copied to your clipboard for convenience.)')}
+        `)
         spinnerAuth.start()
         try {
           clipboardy.writeSync(verif.user_code)
@@ -141,7 +145,7 @@ async function main () {
   })
 
   await gh.auth({ type: 'oauth' })
-  spinnerAuth.succeed('Authenticated.')
+  spinnerAuth.succeed('Authenticated to GitHub.')
 
   // -> Fetch GitHub Repos
 
@@ -158,7 +162,7 @@ async function main () {
     repos = reposRaw?.data?.filter(r => !r.archived && !r.disabled && r.name !== '.github').map(r => r.name).sort() ?? []
   } catch (err) {
     spinnerFetchRepos.fail('Failed to fetch list of GitHub repositories!')
-    console.error(err.message)
+    console.error(chalk.redBright(err.message))
     process.exit(1)
   }
   spinnerFetchRepos.succeed(`Fetched ${repos.length} most recently updated GitHub repositories.`)
@@ -171,7 +175,7 @@ async function main () {
       repo = argv.g
       ora(`Using GitHub repository: ${repo}`).succeed()
     } else {
-      console.warn('Invalid GitHub repository provided.')
+      console.warn(chalk.redBright('Invalid GitHub repository provided.'))
     }
   }
 
@@ -185,7 +189,7 @@ async function main () {
       }
     ])
     if (!repoPrompt?.repo) {
-      console.error('Invalid or no repository selected. Exiting...')
+      console.error(chalk.redBright('Invalid or no repository selected. Exiting...'))
       process.exit(1)
     }
     repo = repoPrompt.repo
@@ -234,10 +238,15 @@ async function main () {
     releases = releasesRaw?.repository?.releases?.nodes ?? []
   } catch (err) {
     spinnerFetchReleases.fail('Failed to fetch list of releases!')
-    console.error(err.message)
+    console.error(chalk.redBright(err.message))
     process.exit(1)
   }
-  spinnerFetchReleases.succeed(`Fetched ${releases.length} most recent releases.`)
+  if (releases.length > 0) {
+    spinnerFetchReleases.succeed(`Fetched ${releases.length} most recent releases.`)
+  } else {
+    spinnerFetchReleases.fail('This project has no release! Exiting...')
+    process.exit(1)
+  }
 
   // -> Select release to use
 
@@ -247,7 +256,7 @@ async function main () {
       releaseName = argv.r
       ora(`Using GitHub release: ${releaseName}`).succeed()
     } else {
-      console.warn('Invalid GitHub release provided.')
+      console.warn(chalk.redBright('Invalid GitHub release provided.'))
     }
   }
 
@@ -262,7 +271,7 @@ async function main () {
       }
     ])
     if (!releasePrompt?.release) {
-      console.error('Invalid or no release selected. Exiting...')
+      console.error(chalk.redBright('Invalid or no release selected. Exiting...'))
       process.exit(1)
     }
     releaseName = releasePrompt.release
@@ -272,8 +281,22 @@ async function main () {
   // -> Check for python dist packages
 
   if (release.releaseAssets.nodes.map(a => a.name).filter(a => a.endsWith('.tar.gz')).length < 1) {
-    console.error('Could not find any Python distribution type asset. Make sure the release has a build attached. Exiting...')
+    console.error(chalk.redBright('Could not find any Python distribution type asset. Make sure the release has a build attached. Exiting...'))
     process.exit(1)
+  }
+
+  // -> Check for existing version on PyPI
+
+  const spinnerCheckExistingVer = ora('Checking for existing version on PyPI...').start()
+  const pypiHost = optsPrompt.pypi === 'pypi' ? 'pypi.org' : 'test.pypi.org'
+  try {
+    await got({
+      url: `https://${pypiHost}/pypi/${repo}/${release.name}/json`
+    }).json()
+    spinnerCheckExistingVer.fail(`Version ${release.name} already exists on ${pypiHost}. Cannot overwrite an existing version! Exiting...`)
+    process.exit(1)
+  } catch (err) {
+    spinnerCheckExistingVer.succeed(`Version ${release.name} does not exist yet on ${pypiHost}.`)
   }
 
   // -> Create temp dir
@@ -287,7 +310,7 @@ async function main () {
     spinnerCreateDir.succeed(`Created temp directory: ${distdir}`)
   } catch (err) {
     spinnerCreateDir.fail('Failed to create temp directory.')
-    console.error(err.message)
+    console.error(chalk.redBright(err.message))
     process.exit(1)
   }
 
@@ -305,7 +328,7 @@ async function main () {
       assetDownloaded++
     } catch (err) {
       spinnerCreateDir.fail(`Failed to download asset ${asset.name}.`)
-      console.error(err.message)
+      console.error(chalk.redBright(err.message))
       process.exit(1)
     }
   }
@@ -335,7 +358,7 @@ async function main () {
     })
   } catch (err) {
     spinnerInstallTwine.fail('Failed to install Twine.')
-    console.error(err.message)
+    console.error(chalk.redBright(err.message))
     process.exit(1)
   }
   spinnerInstallTwine.succeed('Installed Twine successfully.')
@@ -351,7 +374,7 @@ async function main () {
     }
   ])
   if (!confirmPrompt?.go) {
-    console.error('Publishing aborted by the user. Exiting...')
+    console.error(chalk.redBright('Publishing aborted by the user. Exiting...'))
     process.exit(1)
   }
 
@@ -391,7 +414,7 @@ async function main () {
     })
   } catch (err) {
     spinnerRunTwine.fail('Failed to publish package.')
-    console.error(err.message)
+    console.error(chalk.redBright(err.message))
     process.exit(1)
   }
   spinnerRunTwine.succeed('Published package successfully.')
