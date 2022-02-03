@@ -1,6 +1,6 @@
 {
   "name": "@ietf-tools/pypi-publish",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Tool for publishing a Python package to PyPI from a GitHub Release",
   "main": "cli.js",
   "repository": "https://github.com/ietf-tools/pypi-publish.git",

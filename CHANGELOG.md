@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.6] - 2022-02-03
+### New Features
+- [`efe26f8723`](https://github.com/ietf-tools/pypi-publish/commit/efe26f8723323d24363a87c6b3d24693d8bfb12b) - check version on pypi before publish
+
+
 ## [v1.0.5] - 2022-02-02
 ### New Features
 - [`e13fb19e8b`](https://github.com/ietf-tools/pypi-publish/commit/e13fb19e8b0fa52c8c651c269cb06b28c3509f93) - add command arguments support
@@ -28,4 +33,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug Fixes
 - [`924020d6a3`](https://github.com/ietf-tools/pypi-publish/commit/924020d6a33c194206b9b769a4279e23efca719e) - enforce node 16 or later engine
 
-[v1.0.1]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.0...v1.0.1[v1.0.2]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.1...v1.0.2[v1.0.3]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.2...v1.0.3[v1.0.4]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.3...v1.0.4[v1.0.5]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.4...v1.0.5
+[v1.0.1]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.0...v1.0.1[v1.0.2]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.1...v1.0.2[v1.0.3]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.2...v1.0.3[v1.0.4]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.3...v1.0.4[v1.0.5]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.4...v1.0.5[v1.0.6]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.5...v1.0.6
