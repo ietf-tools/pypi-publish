@@ -1,7 +1,7 @@
 <div align="center">
     
-<img src="https://raw.githubusercontent.com/ietf-tools/common/main/assets/logos/ietf-pypi-publish-logo.svg" alt="IETF RFC2HTML" width="600" />
-    
+<img src="https://raw.githubusercontent.com/ietf-tools/common/main/assets/logos/pypi-publish.svg" alt="PYPI PUBLISH" height="125" />
+
 [![Release](https://img.shields.io/github/release/ietf-tools/pypi-publish.svg?style=flat&maxAge=600)](https://github.com/ietf-tools/pypi-publish/releases)
 [![License](https://img.shields.io/github/license/ietf-tools/pypi-publish)](https://github.com/ietf-tools/pypi-publish/blob/main/LICENSE)
 [![npm](https://img.shields.io/npm/v/@ietf-tools/pypi-publish)](https://www.npmjs.com/package/@ietf-tools/pypi-publish)
