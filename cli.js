@@ -24,14 +24,9 @@ async function main () {
         choices: ['pypi', 'testpypi'],
         type: 'string'
       },
-      'u': {
-        alias: 'user',
-        describe: 'PyPI username',
-        type: 'string'
-      },
-      'p': {
-        alias: 'pass',
-        describe: 'PyPI password',
+      'a': {
+        alias: 'token',
+        describe: 'PyPI API Token',
         type: 'string'
       },
       'i': {
@@ -39,7 +34,7 @@ async function main () {
         describe: 'GPG identity to use for package signing',
         type: 'string'
       },
-      'g': {
+      'p': {
         alias: 'project',
         describe: 'GitHub project (repository) to publish from',
         type: 'string'
@@ -87,19 +82,11 @@ async function main () {
       choices: ['pypi', 'testpypi']
     },
     {
-      type: 'input',
-      name: 'user',
-      message: 'Enter your PyPI username:',
-      validate (v) {
-        return (v && v.length > 0) || 'Enter a valid PyPI username'
-      }
-    },
-    {
       type: 'password',
-      name: 'pass',
-      message: 'Enter your PyPI password:',
+      name: 'token',
+      message: 'Enter your PyPI API token:',
       validate (v) {
-        return (v && v.length > 3) || 'Enter a PyPI password'
+        return (v && v.length > 3 && v.startsWith('pypi-')) || 'Enter a PyPI API token'
       }
     },
     {
@@ -110,8 +97,7 @@ async function main () {
   ], {
     ...argv.pythonPath && { python: argv.pythonPath },
     ...argv.t && { pypi: argv.t },
-    ...argv.u && { user: argv.u },
-    ...argv.p && { pass: argv.p },
+    ...argv.a && { token: argv.a },
     ...argv.i && { gpgidentity: argv.i }
   })
   if (!optsPrompt?.python) {
@@ -170,9 +156,9 @@ ${chalk.italic.grey('(The code has already been copied to your clipboard for con
   // -> Select GitHub Repo to use
 
   let repo = null
-  if (argv.g) {
-    if (repos.includes(argv.g)) {
-      repo = argv.g
+  if (argv.p) {
+    if (repos.includes(argv.p)) {
+      repo = argv.p
       ora(`Using GitHub repository: ${repo}`).succeed()
     } else {
       console.warn(chalk.redBright('Invalid GitHub repository provided.'))
@@ -397,8 +383,8 @@ ${chalk.italic.grey('(The code has already been copied to your clipboard for con
       timeout: 1000 * 60 * 5,
       env: {
         ...process.env,
-        TWINE_USERNAME: optsPrompt.user,
-        TWINE_PASSWORD: optsPrompt.pass,
+        TWINE_USERNAME: '__token__',
+        TWINE_PASSWORD: optsPrompt.token,
         TWINE_REPOSITORY_URL: optsPrompt.pypi === 'pypi' ? 'https://upload.pypi.org/legacy/' : 'https://test.pypi.org/legacy/'
       }
     })
