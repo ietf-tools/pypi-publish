@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.0] - 2022-08-29
+### :sparkles: New Features
+- [`a020065`](https://github.com/ietf-tools/pypi-publish/commit/a020065d46cd15a4db28c06abe013448b7b6b4d4) - use API token for pypi publish instead of user/pass *(commit by [@NGPixel](https://github.com/NGPixel))*
+
+
 ## [v1.0.7] - 2022-02-03
 ### Bug Fixes
 - [`59b394ae06`](https://github.com/ietf-tools/pypi-publish/commit/59b394ae06696c0f0e6ca4b508692cebb931a058) - clean temp dir before and after publish
@@ -45,3 +50,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v1.0.5]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.4...v1.0.5
 [v1.0.6]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.5...v1.0.6
 [v1.0.7]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.6...v1.0.7
+
+[v1.1.0]: https://github.com/ietf-tools/pypi-publish/compare/v1.0.7...v1.1.0
