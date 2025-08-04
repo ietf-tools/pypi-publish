@@ -1,3 +1,5 @@
+NOTE: This project has been archived in favour of [PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/).
+
 <div align="center">
     
 <img src="https://raw.githubusercontent.com/ietf-tools/common/main/assets/logos/pypi-publish.svg" alt="PYPI PUBLISH" height="125" />
